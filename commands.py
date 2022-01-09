@@ -59,7 +59,9 @@ class Free2KiSetMaterial:
             for obj in get_bodies_and_features():
                 if hasattr(obj, "ViewObject"):
                     obj.ViewObject.ShapeColor = material.diffuse
-                obj.addProperty("App::PropertyString", "Free2KiMaterial")
+                    obj.ViewObject.Transparency = int(material.transparency * 99.0)
+                if not "Free2KiMaterial" in obj.PropertiesList:
+                    obj.addProperty("App::PropertyString", "Free2KiMaterial")
                 obj.Free2KiMaterial = material_name
 
     def GetResources(self):
