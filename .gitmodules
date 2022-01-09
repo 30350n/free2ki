@@ -1,0 +1,3 @@
+[submodule "mat4cad"]
+	path = mat4cad
+	url = https://github.com/30350n/mat4cad.git
