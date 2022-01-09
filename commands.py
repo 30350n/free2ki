@@ -1,5 +1,5 @@
-from .export_wrl import export_wrl
-from .mat4cad import MATERIALS
+from export_wrl import export_wrl
+from mat4cad import MATERIALS
 
 from FreeCAD import Gui
 import FreeCAD as App

@@ -1,4 +1,4 @@
-from .mat4cad import Material, MATERIALS
+from mat4cad import Material, MATERIALS
 from math import radians
 
 INCH_TO_MM = 1.0 / 2.54
