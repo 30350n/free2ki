@@ -1,38 +1,65 @@
-from mat4cad import Material, MATERIALS
+from mat4cad import Material
+
+import Part
+
+import numpy as np
 from math import radians
 
 INCH_TO_MM = 1.0 / 2.54
+
+MATERIALS_PROPERTY = "Free2KiMaterials"
+MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
 
 def export_wrl(path, objects):
     with open(str(path), "w") as file:
         file.write(VRML_HEADER)
 
+        points_list = []
+        triangles_list = []
         material_ids = []
-        materials_string = ""
         for obj in objects:
-            if hasattr(obj, "Free2KiMaterial"):
-                name = obj.Free2KiMaterial
-                material = MATERIALS[name]
+            print(f"info: exporting \"{obj.Label}\"")
+
+            obj_material_ids = ["default"]
+            materials = [Material()]
+            material_indices = np.zeros(len(obj.Shape.Faces), dtype=int)
+
+            if hasattr(obj, MATERIALS_PROPERTY):
+                if (ids := getattr(obj, MATERIALS_PROPERTY)) in ([], [""]):
+                    print(f"warning: {obj.Label}.{MATERIALS_PROPERTY} is empty")
+                elif not (indices := getattr(obj, MATERIAL_INDICES_PROPERTY)):
+                    print(f"warning: {obj.Label}.{MATERIAL_INDICES_PROPERTY} is empty")
+                else:
+                    obj_material_ids = ids
+                    materials = [Material.from_name(name) for name in obj_material_ids]
+                    material_indices = np.array(indices)
+
             elif hasattr(obj, "ViewObject"):
-                name = obj.Label
+                obj_material_ids = [obj.Label]
                 view = obj.ViewObject
-                material = Material(diffuse=view.ShapeColor, alpha=1.0-view.Transparency)
-            else:
-                name = "default"
-                material = Material()
+                materials = [Material(diffuse=view.ShapeColor, alpha=1.0-view.Transparency)]
 
-            if not name in material_ids:
-                file.write(SHAPE_FORMAT.format(MATERIAL_FORMAT.format(name=name, m=material)))
-            material_ids.append(name)
-
-        for obj, material_id in zip(objects, material_ids):
-            points, triangles = obj.Shape.tessellate(0.01)
+            for material_id, material in zip(obj_material_ids, materials):
+                if not material_id in material_ids:
+                    material_string = MATERIAL_FORMAT.format(name=material_id, m=material)
+                    file.write(SHAPE_FORMAT.format(material_string))
+                material_ids.append(material_id)
 
             global_matrix = obj.getGlobalPlacement().Matrix * obj.Placement.Matrix.inverse()
             global_matrix.scale(INCH_TO_MM, INCH_TO_MM, INCH_TO_MM)
-            points = (global_matrix * v for v in points)
-            
-            points_str = ", ".join(f"{v.x:g} {v.y:g} {v.z:g}" for v in points)
+
+            for i, material_id in enumerate(obj_material_ids):
+                face_indices = np.nonzero(material_indices == i)[0]
+                faces = [obj.Shape.Faces[index] for index in face_indices]
+                solid = Part.makeSolid(Part.makeShell(faces))
+
+                points, triangles = solid.tessellate(0.01)
+                points = [global_matrix * v for v in points]
+                points_list.append(points)
+                triangles_list.append(triangles)
+
+        for points, triangles, material_id in zip(points_list, triangles_list, material_ids):
+            points_str = ", ".join(f"{v[0]:g} {v[1]:g} {v[2]:g}" for v in points)
             indices_str = ", ".join(f"{t[0]},{t[1]},{t[2]},-1" for t in triangles)
             file.write(
                 SHAPE_FORMAT.format(
