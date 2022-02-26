@@ -31,7 +31,10 @@ def export_wrl(path, objects):
                     print(f"warning: {obj.Label}.{MATERIAL_INDICES_PROPERTY} is empty")
                 else:
                     obj_material_ids = ids
-                    materials = [Material.from_name(name) for name in obj_material_ids]
+                    materials = [
+                        mat if (mat := Material.from_name(name)) else Material()
+                        for name in obj_material_ids
+                    ]
                     material_indices = np.array(indices)
 
             elif hasattr(obj, "ViewObject"):
