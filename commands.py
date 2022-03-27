@@ -108,7 +108,7 @@ class Free2KiSetMaterial:
         for index in material_indices:
             used_materials.add(materials[index])
 
-        index_mapping = np.zeros(len(used_materials), dtype=int)
+        index_mapping = np.zeros(len(materials), dtype=int)
         colors = []
         for i, material_name in enumerate(used_materials):
             index_mapping[materials.index(material_name)] = i
@@ -138,7 +138,7 @@ def get_shape_objects(parents=None):
     result = []
     for parent in parents:
         if parent.Visibility:
-            if hasattr(parent, "Shape"):
+            if hasattr(parent, "Shape") and type(parent) != App.Part:
                 result.append(parent)
             elif hasattr(parent, "Group"):
                 result += get_shape_objects(parent.Group)
