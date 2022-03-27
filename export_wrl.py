@@ -53,6 +53,7 @@ def export_wrl(path, objects):
 
             for i, material_id in enumerate(obj_material_ids):
                 face_indices = np.nonzero(material_indices == i)[0]
+                face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
                 faces = [obj.Shape.Faces[index] for index in face_indices]
                 solid = Part.makeSolid(Part.makeShell(faces))
 
