@@ -61,12 +61,16 @@ class Free2KiSetMaterial:
 
         selection = {}
         for element in App.Gui.Selection.getSelectionEx():
-            if element.HasSubObjects and hasattr(element.Object, "Shape"):
-                faces = [int(name[4:]) - 1 for name in element.SubElementNames if name.startswith("Face")]
-                selection[element.Object] = faces
+            obj = element.Object
+            if element.HasSubObjects and hasattr(obj, "Shape"):
+                faces = [
+                    int(name[4:]) - 1
+                    for name in element.SubElementNames if name.startswith("Face")
+                ]
+                selection[obj] = faces
             else:
-                for obj in get_shape_objects([element.Object]):
-                    selection[obj] = None
+                for child in get_shape_objects([obj]):
+                    selection[child] = None
 
         for obj, faces in selection.items():
             if not MATERIALS_PROPERTY in obj.PropertiesList:
@@ -82,12 +86,9 @@ class Free2KiSetMaterial:
                 obj.ViewObject.Transparency = int(material.transparency * 99.0)
             else:
                 materials = getattr(obj, MATERIALS_PROPERTY)
-                if material_name in materials:
-                    index = materials.index(material_name)
-                else:
-                    index = len(materials)
-                    materials.append(material_name)
-                
+                index = len(materials)
+                materials.append(material_name)
+
                 setattr(obj, MATERIALS_PROPERTY, materials)
 
                 material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
@@ -104,9 +105,7 @@ class Free2KiSetMaterial:
 
         material_indices = material_indices[:len(obj.Shape.Faces)]
 
-        used_materials = set()
-        for index in material_indices:
-            used_materials.add(materials[index])
+        used_materials = {materials[index] for index in set(material_indices)}
 
         index_mapping = np.zeros(len(materials), dtype=int)
         colors = []
@@ -138,12 +137,12 @@ def get_shape_objects(parents=None):
     result = []
     for parent in parents:
         if parent.Visibility:
-            if hasattr(parent, "Shape") and type(parent) != App.Part:
-                result.append(parent)
-            elif hasattr(parent, "Group"):
+            if hasattr(parent, "Group"):
                 result += get_shape_objects(parent.Group)
+            elif hasattr(parent, "Shape"):
+                result.append(parent)
 
-    return result
+    return list(set(result))
 
 class SelectMaterialDialog(QDialog):
     def __init__(self):
