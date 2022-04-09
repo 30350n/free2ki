@@ -72,6 +72,11 @@ class Free2KiSetMaterial:
                 for child in get_shape_objects([obj]):
                     selection[child] = None
 
+        if not selection:
+            QMessageBox.critical(None, "Error",
+                "Failed to set material. Nothing is selected.")
+            return
+
         for obj, faces in selection.items():
             if not MATERIALS_PROPERTY in obj.PropertiesList:
                 obj.addProperty("App::PropertyStringList", MATERIALS_PROPERTY)
@@ -137,7 +142,9 @@ def get_shape_objects(parents=None):
     result = []
     for parent in parents:
         if parent.Visibility:
-            if hasattr(parent, "Group"):
+            if "PartDesign.Feature" in str(type(parent)):
+                result.append(parent)
+            elif hasattr(parent, "Group"):
                 result += get_shape_objects(parent.Group)
             elif hasattr(parent, "Shape"):
                 result.append(parent)
