@@ -107,23 +107,19 @@ class Free2KiSetMaterial:
     def recalculate_materials(obj):
         materials = getattr(obj, MATERIALS_PROPERTY)
         material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY))
-
         material_indices = material_indices[:len(obj.Shape.Faces)]
 
-        used_materials = {materials[index] for index in set(material_indices)}
+        used_materials = list({materials[index] for index in set(material_indices)})
+        index_mapping = np.array([used_materials.index(name) for name in materials])
+        colors = np.array([
+            mat.diffuse if (mat := Material.from_name(name)) else (0.0, 0.0, 0.0)
+            for name in used_materials
+        ])
 
-        index_mapping = np.zeros(len(materials), dtype=int)
-        colors = []
-        for i, material_name in enumerate(used_materials):
-            index_mapping[materials.index(material_name)] = i
-            color = (0.0, 0.0, 0.0)
-            if material := Material.from_name(material_name):
-                color = material.diffuse
-            colors.append(color)
         remapped_indices = index_mapping[material_indices]
-        diffuse_color = np.array(colors, dtype=float)[remapped_indices]
+        diffuse_color = colors[remapped_indices]
 
-        setattr(obj, MATERIALS_PROPERTY, list(used_materials))
+        setattr(obj, MATERIALS_PROPERTY, used_materials)
         setattr(obj, MATERIAL_INDICES_PROPERTY, remapped_indices.tolist())
         obj.ViewObject.DiffuseColor = list(map(tuple, diffuse_color))
 
