@@ -55,9 +55,9 @@ def export_wrl(path, objects):
                 face_indices = np.nonzero(material_indices == i)[0]
                 face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
                 faces = [obj.Shape.Faces[index] for index in face_indices]
-                solid = Part.makeSolid(Part.makeShell(faces))
+                compound = Part.makeCompound(faces)
 
-                points, triangles = solid.tessellate(0.01)
+                points, triangles = compound.tessellate(0.01)
                 points = [global_matrix * v for v in points]
                 points_list.append(points)
                 triangles_list.append(triangles)
