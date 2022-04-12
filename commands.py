@@ -142,7 +142,7 @@ def get_shape_objects(parents=None):
                 result.append(parent)
             elif hasattr(parent, "Group"):
                 result += get_shape_objects(parent.Group)
-            elif hasattr(parent, "Shape"):
+            elif hasattr(parent, "Shape") and parent.Shape.Faces:
                 result.append(parent)
 
     return list(set(result))
