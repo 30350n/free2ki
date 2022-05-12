@@ -21,9 +21,10 @@ integrates into my KiCad to Blender workflow
 4. Export the selected objects (or the whole file if nothing is selected) via the `Export`
    tool. This will create a `<project_name>.wrl` file, in the same directory your FreeCAD
    project file is in.
-5. (optional) Install the [pcb2blender] Blender addon and import your model via
-   `File -> Import -> X3D (.x3d/.wrl)` (installing the `pcb2blender` addon is necessary,
-   otherwise the `mat4cad` materials won't be recognized properly).
+5. (optional) Install the [pcb2blender](https://github.com/30350n/pcb2blender)
+   Blender addon and import your model via<br>
+   `File -> Import -> X3D (.x3d/.wrl)` (installing the pcb2blender addon is necessary,
+   otherwise the mat4cad materials won't be recognized properly).
 
 ### Materials
 
