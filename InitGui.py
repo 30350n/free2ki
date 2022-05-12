@@ -7,11 +7,7 @@ class Free2KiWorkbench(Workbench):
     Icon = str((Path(__file__).parent / "icons" / "kicad.png").resolve())
 
     def Initialize(self):
-        from commands import FREE2KI_CMD_EXPORT, FREE2KI_CMD_SET_MATERIAL
-        cmds = [
-            FREE2KI_CMD_EXPORT,
-            FREE2KI_CMD_SET_MATERIAL,
-        ]
+        from commands import cmds
 
         self.appendToolbar("Free2Ki Tools", cmds)
         self.appendMenu("Free2Ki Tools", cmds)

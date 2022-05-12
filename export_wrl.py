@@ -18,7 +18,8 @@ def export_wrl(path, objects):
         triangles_list = []
         material_ids = []
         for obj in objects:
-            print(f"info: exporting \"{obj.Label}\"")
+            name = obj._Body.Label if hasattr(obj, "_Body") else obj.Label
+            print(f"info: exporting \"{name}\"")
 
             obj_material_ids = ["default"]
             materials = [Material()]
@@ -26,9 +27,9 @@ def export_wrl(path, objects):
 
             if hasattr(obj, MATERIALS_PROPERTY):
                 if (ids := getattr(obj, MATERIALS_PROPERTY)) in ([], [""]):
-                    print(f"warning: {obj.Label}.{MATERIALS_PROPERTY} is empty")
+                    print(f"warning: {name}.{MATERIALS_PROPERTY} is empty")
                 elif not (indices := getattr(obj, MATERIAL_INDICES_PROPERTY)):
-                    print(f"warning: {obj.Label}.{MATERIAL_INDICES_PROPERTY} is empty")
+                    print(f"warning: {name}.{MATERIAL_INDICES_PROPERTY} is empty")
                 else:
                     obj_material_ids = ids
                     materials = [
@@ -38,7 +39,7 @@ def export_wrl(path, objects):
                     material_indices = np.array(indices)
 
             elif hasattr(obj, "ViewObject"):
-                obj_material_ids = [obj.Label]
+                obj_material_ids = [name]
                 view = obj.ViewObject
                 materials = [Material(diffuse=view.ShapeColor, alpha=1.0-view.Transparency)]
 

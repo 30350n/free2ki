@@ -7,12 +7,10 @@ from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCore import QRect
 
+import string
 from pathlib import Path
 from math import ceil
 import numpy as np
-
-FREE2KI_CMD_EXPORT = "Free2KiExport"
-FREE2KI_CMD_SET_MATERIAL = "Free2KiSetMaterial"
 
 class Free2KiExport:
     def Activated(self):
@@ -52,13 +50,8 @@ class Free2KiExport:
                 "Export selected, visible objects (with children)."
         }
 
-class Free2KiSetMaterial:
+class Free2KiSetMaterials:
     def Activated(self):
-        if not (material_name := SelectMaterialDialog().execute()):
-            return
-
-        material = Material.from_name(material_name)
-
         selection = {}
         for element in App.Gui.Selection.getSelectionEx():
             obj = element.Object
@@ -77,31 +70,36 @@ class Free2KiSetMaterial:
                 "Failed to set material. Nothing is selected.")
             return
 
-        for obj, faces in selection.items():
-            if not MATERIALS_PROPERTY in obj.PropertiesList:
-                obj.addProperty("App::PropertyStringList", MATERIALS_PROPERTY)
-            if not MATERIAL_INDICES_PROPERTY in obj.PropertiesList:
-                obj.addProperty("App::PropertyIntegerList", MATERIAL_INDICES_PROPERTY)
+        if not (selected_materials := SelectMaterialDialog(selection).execute()):
+            return
 
-            if not faces:
-                setattr(obj, MATERIALS_PROPERTY, [material_name])
-                setattr(obj, MATERIAL_INDICES_PROPERTY, [0] * len(obj.Shape.Faces))
-                obj.ViewObject.ShapeColor = material.diffuse
-                obj.ViewObject.DiffuseColor = [material.diffuse]
-                obj.ViewObject.Transparency = int(material.transparency * 99.0)
-            else:
-                materials = getattr(obj, MATERIALS_PROPERTY)
-                index = len(materials)
-                materials.append(material_name)
-
-                setattr(obj, MATERIALS_PROPERTY, materials)
-
-                material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
-                material_indices.resize(len(obj.Shape.Faces))
-                material_indices[faces] = index
-                setattr(obj, MATERIAL_INDICES_PROPERTY, material_indices.tolist())
-
+        for obj, faces, material in selected_materials:
+            self.setup_material_indices(material, obj, faces)
+        for obj in selection:
             self.recalculate_materials(obj)
+
+    @staticmethod
+    def setup_material_indices(material, obj, faces=None):
+        if not MATERIALS_PROPERTY in obj.PropertiesList:
+            obj.addProperty("App::PropertyStringList", MATERIALS_PROPERTY)
+        if not MATERIAL_INDICES_PROPERTY in obj.PropertiesList:
+            obj.addProperty("App::PropertyIntegerList", MATERIAL_INDICES_PROPERTY)
+
+        if not faces:
+            setattr(obj, MATERIALS_PROPERTY, [material.name])
+            setattr(obj, MATERIAL_INDICES_PROPERTY, [0] * len(obj.Shape.Faces))
+            obj.ViewObject.Transparency = int(material.transparency * 99.0)
+        else:
+            materials = getattr(obj, MATERIALS_PROPERTY)
+            index = len(materials)
+            materials.append(material.name)
+
+            setattr(obj, MATERIALS_PROPERTY, materials)
+
+            material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
+            material_indices.resize(len(obj.Shape.Faces))
+            material_indices[faces] = index
+            setattr(obj, MATERIAL_INDICES_PROPERTY, material_indices.tolist())
 
     @staticmethod
     def recalculate_materials(obj):
@@ -126,7 +124,7 @@ class Free2KiSetMaterial:
     def GetResources(self):
         return {
             "Pixmap": str((Path(__file__).parent / "icons" / "material.png").resolve()),
-            "MenuText": "Set Material",
+            "MenuText": "Set Materials",
             "Tooltip": 
                 "Set material for selected, visible objects."
         }
@@ -148,62 +146,186 @@ def get_shape_objects(parents=None):
     return list(set(result))
 
 class SelectMaterialDialog(QDialog):
-    def __init__(self):
+    MAX_HEIGHT = 300
+
+    def __init__(self, selection):
         super().__init__(None, Qt.WindowTitleHint | Qt.WindowCloseButtonHint)
 
-        self.color_preview = ColorBox()
+        box_materials = QVBoxLayout()
 
-        self.combo_base_material = QComboBox()
-        self.combo_base_material.currentTextChanged.connect(self.on_base_material_change)
+        self.material_selectors = []
+        names = (obj._Body.Label if hasattr(obj, "_Body") else obj.Label for obj in selection)
+        for name, obj, faces in sorted(zip(names, *zip(*selection.items()))):
+            if len(selection) > 1:
+                box_materials.addWidget(QLabel(name))
 
-        self.combo_color = QComboBox()
-        self.combo_color.currentTextChanged.connect(self.on_color_change)
+            for sub_faces, material in self.get_existing_materials(obj, faces):
+                material_selector = MaterialSelector(material)
+                box_materials.addWidget(material_selector)
+                self.material_selectors.append((obj, sub_faces, material_selector))
 
-        self.combo_variant = QComboBox()
+        layout = QVBoxLayout()
 
-        self.combo_base_material.addItems(BASE_MATERIALS.keys())
+        widget_materials = QWidget()
+        widget_materials.setLayout(box_materials)
+        widget_materials.adjustSize()
+        size = widget_materials.size()
+
+        if size.height() > self.MAX_HEIGHT:
+            scroll_area = QScrollArea()
+            scroll_area.setWidget(widget_materials)
+            scroll_area.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+            scroll_area.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
+            scroll_area.adjustSize()
+            scroll_bar = scroll_area.verticalScrollBar()
+            scroll_bar.adjustSize()
+            scroll_area.setFixedSize(size.width() + scroll_bar.size().width(), self.MAX_HEIGHT)
+            layout.addWidget(scroll_area)
+        else:
+            layout.addWidget(widget_materials)
 
         self.button_set_material = QPushButton("Set Material")
         self.button_set_material.clicked.connect(self.set_material)
         self.button_cancel = QPushButton("Cancel")
         self.button_cancel.clicked.connect(self.reject)
 
-        row_material = QHBoxLayout()
-        row_material.addItem(QSpacerItem(4, 40))
-        row_material.addWidget(self.color_preview)
-        row_material.addItem(QSpacerItem(10, 40))
-        row_material.addWidget(self.combo_base_material)
-        row_material.addItem(QSpacerItem(10, 40))
-        row_material.addWidget(self.combo_color)
-        row_material.addItem(QSpacerItem(10, 40))
-        row_material.addWidget(self.combo_variant)
-        row_material.addItem(QSpacerItem(4, 40))
+        row_buttons = QHBoxLayout()
+        row_buttons.addWidget(self.button_set_material)
+        row_buttons.addWidget(self.button_cancel)
+        layout.addLayout(row_buttons)
 
-        row_button = QHBoxLayout()
-        row_button.addWidget(self.button_set_material)
-        row_button.addWidget(self.button_cancel)
-
-        layout = QVBoxLayout()
-        layout.addLayout(row_material)
-        layout.addLayout(row_button)
         self.setLayout(layout)
+
+    @staticmethod
+    def get_existing_materials(obj, faces):
+        if not faces:
+            faces = np.arange(len(obj.Shape.Faces))
+
+        if {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}.issubset(obj.PropertiesList):
+            material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
+            material_indices.resize(len(obj.Shape.Faces))
+
+            face_material_indices = material_indices[faces]
+            unique_material_indices = np.unique(face_material_indices)
+            materials = [Material.from_name(name) for name in getattr(obj, MATERIALS_PROPERTY)]
+
+            return [
+                (np.nonzero(index == face_material_indices), materials[index])
+                for index in unique_material_indices
+            ]
+        elif len(obj.ViewObject.DiffuseColor) > 1:
+            colors = np.array(obj.ViewObject.DiffuseColor)
+            colors.resize((len(obj.Shape.Faces), 4))
+            
+            face_colors = colors[faces]
+            unique_colors = np.unique(face_colors, axis=0)
+            materials = [
+                Material.from_name(f"plastic-custom_{rgb2hex(color)}-semi_matte")
+                for color in unique_colors
+            ]
+
+            return [
+                (np.nonzero(np.all(color == face_colors, axis=1)), materials[index])
+                for index, color in enumerate(unique_colors)
+            ]
+        else:
+            color = obj.ViewObject.DiffuseColor[0]
+            if np.all(np.isclose(color, (0.8, 0.8, 0.8, 0.0))):
+                material = Material.from_name("plastic-mouse_grey-semi_matte")
+            else:
+                material = Material.from_name(f"plastic-custom_{rgb2hex(color)}-semi_matte")
+
+            return [
+                (faces, material)
+            ]
+
+    def set_material(self):
+        self.accept()
+
+    def execute(self):
+        if self.exec_():
+            return [
+                (obj, faces, material_selector.get_material())
+                for (obj, faces, material_selector) in self.material_selectors
+            ]
+
+class MaterialSelector(QWidget):
+    def __init__(self, material=None):
+        super().__init__()
+
+        self.custom_color = (0.8, 0.8, 0.8)
+        self.suppress_update = False
+
+        self.color_preview = ColorBox()
+        self.combo_base_material = QComboBox()
+        self.combo_color = QComboBox()
+        self.color_hexcode = QLineEdit()
+        self.combo_variant = QComboBox()
+
+        self.combo_base_material.currentTextChanged.connect(self.on_base_material_change)
+        self.combo_color.currentTextChanged.connect(self.on_color_change)
+        self.color_hexcode.textChanged.connect(self.on_hexcode_change)
+        self.combo_base_material.addItems(BASE_MATERIALS.keys())
+
+        self.color_hexcode.setMaxLength(6)
+        self.color_hexcode.setInputMask("HHHHHH")
+        font_metrics = QFontMetrics(self.font(), self)
+        width = max((font_metrics.widthChar(c) for c in string.hexdigits)) * 6
+        self.color_hexcode.setFixedWidth(width)
+
+        self.combo_color.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Ignored)
+        self.combo_variant.setSizePolicy(QSizePolicy.Fixed, QSizePolicy.Ignored)
+
+        if material:
+            self.combo_base_material.setCurrentText(material.base)
+            if material.has_custom_color:
+                self.combo_color.setCurrentText("custom")
+                self.color_hexcode.setText(material.custom_color)
+            else:
+                self.combo_color.setCurrentText(material.color)
+            self.combo_variant.setCurrentText(material.variant)
+
+        layout = QHBoxLayout()
+        layout.addItem(QSpacerItem( 4, 0))
+        layout.addWidget(self.color_preview)
+        layout.addItem(QSpacerItem(10, 0))
+        layout.addWidget(self.combo_base_material)
+        layout.addItem(QSpacerItem(10, 0))
+        layout.addWidget(self.combo_color)
+        layout.addItem(QSpacerItem(10, 0))
+        layout.addWidget(self.color_hexcode)
+        layout.addItem(QSpacerItem(10, 0))
+        layout.addWidget(self.combo_variant)
+        layout.addItem(QSpacerItem( 4, 0))
+        self.setLayout(layout)
+
+    def get_material(self):
+        base = self.combo_base_material.currentText()
+        if (color := self.combo_color.currentText()) == "custom":
+            color = f"custom_{rgb2hex(self.custom_color)}"
+        variant = self.combo_variant.currentText()
+        return Material.from_name("-".join((base, color, variant)))
 
     def on_base_material_change(self, new_base_material):
         colors = BASE_MATERIAL_COLORS[new_base_material]
+        if new_base_material not in ("special",):
+            colors = {"custom": self.custom_color, **colors}
+
         old_active_color = self.combo_color.currentText()
+
+        self.suppress_update = True
         self.combo_color.clear()
         self.combo_color.addItems(colors.keys())
-
-        if old_active_color in colors:
-            self.combo_color.setCurrentText(old_active_color)
-        else:
-            self.combo_color.setCurrentIndex(0)
-
         for i, color in enumerate(colors.values()):
             if type(color) == Material:
                 color = color.diffuse
             r, g, b = color
             self.combo_color.setItemData(i, QColor(r*255, g*255, b*255), Qt.DecorationRole)
+        if old_active_color in colors:
+            self.combo_color.setCurrentText(old_active_color)
+        else:
+            self.combo_color.setCurrentIndex(0)
+        self.suppress_update = False
 
         variants = BASE_MATERIAL_VARIANTS[new_base_material]
         old_active_variant = self.combo_variant.currentText()
@@ -215,20 +337,23 @@ class SelectMaterialDialog(QDialog):
         else:
             self.combo_variant.setCurrentIndex(len(variants) // 2)
 
-    def on_color_change(self, _):
+    def on_color_change(self, new_color):
+        if self.suppress_update:
+            return
+
         color = self.combo_color.itemData(self.combo_color.currentIndex(), Qt.DecorationRole)
+        self.color_hexcode.setReadOnly(new_color != "custom")
+        self.color_hexcode.setText(color.name()[1:])
         self.color_preview.updateColor(color)
 
-    def set_material(self):
-        self.accept()
+    def on_hexcode_change(self, new_hexcode):
+        self.custom_color = r, g, b = hex2rgb(new_hexcode.rjust(6, "0"))
+        color = QColor(r*255, g*255, b*255)
+        self.color_preview.updateColor(color)
 
-    def execute(self):
-        if self.exec_():
-            return "-".join((
-                self.combo_base_material.currentText(),
-                self.combo_color.currentText(),
-                self.combo_variant.currentText()
-            ))
+        self.suppress_update = True
+        self.combo_color.setItemData(self.combo_color.currentIndex(), color, Qt.DecorationRole)
+        self.suppress_update = False
 
 class ColorBox(QWidget):
     def __init__(self):
@@ -253,5 +378,13 @@ class ColorBox(QWidget):
         painter.fillRect(rect, brush)
         painter.end()
 
+FREE2KI_CMD_EXPORT = "Free2KiExport"
+FREE2KI_CMD_SET_MATERIALS = "Free2KiSetMaterials"
+
 Gui.addCommand(FREE2KI_CMD_EXPORT, Free2KiExport())
-Gui.addCommand(FREE2KI_CMD_SET_MATERIAL, Free2KiSetMaterial())
+Gui.addCommand(FREE2KI_CMD_SET_MATERIALS, Free2KiSetMaterials())
+
+cmds = [
+    FREE2KI_CMD_EXPORT,
+    FREE2KI_CMD_SET_MATERIALS,
+]
