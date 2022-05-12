@@ -4,8 +4,8 @@
 <img src="images/header.jpg"/>
 
 The free2ki [FreeCAD](https://github.com/FreeCAD/FreeCAD) workbench enables you to apply
-materials to 3D models in FreeCAD, aswell as to easily export them to VRML (.wrl) files,
-with correctly applied rotation and scaling, for use in KiCad aswell as Blender.
+materials to 3D models in FreeCAD, as well as to easily export them to VRML (.wrl) files,
+with correctly applied rotation and scaling, for use in KiCad as well as Blender.
 
 I created it as I wanted a fast to use, simple and less buggy/bloated alternative to the
 [kicadStepUp](https://github.com/easyw/kicadStepUpMod) workbench, which also better
