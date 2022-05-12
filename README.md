@@ -23,9 +23,9 @@ integrates into my KiCad to Blender workflow
    project file is in.
 5. (optional) Install the [pcb2blender](https://github.com/30350n/pcb2blender)
    Blender addon and import your model via<br>
-   `File -> Import -> X3D (.x3d/.wrl)`<br>
+   `File -> Import -> X3D (.x3d/.wrl)`.<br>
    (installing the pcb2blender addon is necessary, otherwise the mat4cad materials won't be
-   recognized properly).
+   recognized properly)
 
 ### Materials
 
