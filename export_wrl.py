@@ -9,6 +9,7 @@ INCH_TO_MM = 1.0 / 2.54
 
 MATERIALS_PROPERTY = "Free2KiMaterials"
 MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
+PROPERTIES = {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}
 
 def export_wrl(path, objects):
     with open(str(path), "w") as file:

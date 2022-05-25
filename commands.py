@@ -1,4 +1,4 @@
-from export_wrl import export_wrl, MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY
+from export_wrl import export_wrl, MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY, PROPERTIES
 from mat4cad import *
 
 from FreeCAD import Gui
@@ -198,14 +198,11 @@ class SelectMaterialDialog(QDialog):
 
     @staticmethod
     def get_existing_materials(obj, faces):
-        if not faces:
-            faces = np.arange(len(obj.Shape.Faces))
-
-        if {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}.issubset(obj.PropertiesList):
+        if PROPERTIES.issubset(obj.PropertiesList) and getattr(obj, MATERIALS_PROPERTY):
             material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
             material_indices.resize(len(obj.Shape.Faces))
 
-            face_material_indices = material_indices[faces]
+            face_material_indices = material_indices[faces] if faces else material_indices
             unique_material_indices = np.unique(face_material_indices)
             materials = [Material.from_name(name) for name in getattr(obj, MATERIALS_PROPERTY)]
 
@@ -217,7 +214,7 @@ class SelectMaterialDialog(QDialog):
             colors = np.array(obj.ViewObject.DiffuseColor)
             colors.resize((len(obj.Shape.Faces), 4))
             
-            face_colors = colors[faces]
+            face_colors = colors[faces] if faces else colors
             unique_colors = np.unique(face_colors, axis=0)
             materials = [
                 Material.from_name(f"plastic-custom_{rgb2hex(color)}-semi_matte")
