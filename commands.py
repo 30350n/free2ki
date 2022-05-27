@@ -262,7 +262,7 @@ class MaterialSelector(QWidget):
         self.combo_base_material.currentTextChanged.connect(self.on_base_material_change)
         self.combo_color.currentTextChanged.connect(self.on_color_change)
         self.color_hexcode.textChanged.connect(self.on_hexcode_change)
-        self.combo_base_material.addItems(BASE_MATERIALS.keys())
+        self.combo_base_material.addItems(list(BASE_MATERIALS.keys()))
 
         self.color_hexcode.setMaxLength(6)
         self.color_hexcode.setInputMask("HHHHHH")
@@ -312,7 +312,7 @@ class MaterialSelector(QWidget):
 
         self.suppress_update = True
         self.combo_color.clear()
-        self.combo_color.addItems(colors.keys())
+        self.combo_color.addItems(list(colors.keys()))
         for i, color in enumerate(colors.values()):
             if type(color) == Material:
                 color = color.diffuse
@@ -327,7 +327,7 @@ class MaterialSelector(QWidget):
         variants = BASE_MATERIAL_VARIANTS[new_base_material]
         old_active_variant = self.combo_variant.currentText()
         self.combo_variant.clear()
-        self.combo_variant.addItems(variants.keys())
+        self.combo_variant.addItems(list(variants.keys()))
 
         if old_active_variant in variants:
             self.combo_variant.setCurrentText(old_active_variant)
