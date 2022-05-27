@@ -1,4 +1,4 @@
-[![freecad](https://img.shields.io/badge/freecad-0.19.3-brightgreen)](https://www.gnu.org/licenses/gpl-3.0.txt)
+[![freecad](https://img.shields.io/badge/freecad-0.20.0-brightgreen)](https://www.gnu.org/licenses/gpl-3.0.txt)
 [![gplv3](https://img.shields.io/badge/license-GPLv3-lightgrey)](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 <img src="images/header.jpg"/>
