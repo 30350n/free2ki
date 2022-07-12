@@ -7,9 +7,9 @@
    viewBox="0 0 4.2333332 4.2333335"
    version="1.1"
    id="svg5135"
-   inkscape:version="1.1.1 (3bf5ae0d25, 2021-09-20)"
+   inkscape:version="1.2 (dc2aedaf03, 2022-05-15)"
    sodipodi:docname="material.svg"
-   inkscape:export-filename="D:\programming\free2ki\icons\material.png"
+   inkscape:export-filename="material.png"
    inkscape:export-xdpi="768.00006"
    inkscape:export-ydpi="768.00006"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
@@ -33,15 +33,17 @@
      inkscape:snap-bbox-edge-midpoints="true"
      inkscape:snap-bbox-midpoints="true"
      inkscape:snap-page="true"
-     inkscape:zoom="2.828427"
-     inkscape:cx="23.511302"
-     inkscape:cy="53.209788"
+     inkscape:zoom="11.313708"
+     inkscape:cx="8.5736701"
+     inkscape:cy="16.528622"
      inkscape:window-width="1920"
      inkscape:window-height="1017"
      inkscape:window-x="1912"
      inkscape:window-y="-8"
      inkscape:window-maximized="1"
-     inkscape:current-layer="layer1" />
+     inkscape:current-layer="layer1"
+     inkscape:showpageshadow="0"
+     inkscape:deskcolor="#505050" />
   <defs
      id="defs5132" />
   <g
@@ -63,7 +65,7 @@
        x="2.2637329e-16"
        y="2.3290838e-16" />
     <circle
-       style="display:inline;fill:#8a1a1a;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:3.77953;stroke-opacity:1"
+       style="display:inline;fill:#681414;fill-opacity:1;stroke:none;stroke-width:0.1;stroke-linecap:square;stroke-linejoin:bevel;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:3.77953;stroke-opacity:1"
        id="path11052"
        cx="2.1166666"
        cy="2.1166666"
