@@ -1,4 +1,4 @@
-[![freecad](https://img.shields.io/badge/freecad-0.20.0-brightgreen)](https://www.gnu.org/licenses/gpl-3.0.txt)
+[![freecad](https://img.shields.io/badge/freecad-0.20.0-brightgreen)](https://www.freecadweb.org/)
 [![gplv3](https://img.shields.io/badge/license-GPLv3-lightgrey)](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 <img src="images/header.jpg"/>
@@ -46,14 +46,14 @@ next update!
 
 ## Other Projects
 
-- I've created all the 3D models of the
+- All the 3D models of the
   [protorack-kicad](https://github.com/30350n/protorack-kicad) KiCad library, which contains
-  all the custom symbols and footprints I use for eurorack module development, using this
-  workbench.
+  all the custom symbols and footprints I use for eurorack module development, have been
+  created using this workbench.
 
-- My [pcb2blender](https://github.com/30350n/pcb2blender) workflow makes use of the
+- The [pcb2blender](https://github.com/30350n/pcb2blender) workflow makes use of the
   [mat4cad](https://github.com/30350n/mat4cad) materials that this workbench lets you apply
-  to your models. These materials will be recognized by Blender and depending on the material
+  to your models. These materials will be recognized by Blender, and depending on the material
   type, different procedural textures/features will be used in Blender, making your models
   look more realistic.
 
