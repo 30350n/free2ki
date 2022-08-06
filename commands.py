@@ -103,14 +103,15 @@ class Free2KiSetMaterials:
 
     @staticmethod
     def recalculate_materials(obj):
-        materials = getattr(obj, MATERIALS_PROPERTY)
+        materials = np.array(getattr(obj, MATERIALS_PROPERTY), dtype=object)
         material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY))
         material_indices = material_indices[:len(obj.Shape.Faces)]
 
         used_materials = list({materials[index] for index in set(material_indices)})
         index_mapping = np.zeros(len(materials), dtype=int)
         for i, name in enumerate(used_materials):
-            index_mapping[materials.index(name)] = i
+            for index in np.where(materials == name):
+                index_mapping[index] = i
         colors = np.array([
             mat.diffuse if (mat := Material.from_name(name)) else (0.0, 0.0, 0.0)
             for name in used_materials
