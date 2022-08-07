@@ -61,11 +61,11 @@ def export_vrml(path, objects):
             global_matrix = obj.getGlobalPlacement().Matrix * obj.Placement.Matrix.inverse()
             global_matrix.scale(INCH_TO_MM, INCH_TO_MM, INCH_TO_MM)
 
+            faces = np.array(obj.Shape.Faces)
             for i, material_id in enumerate(obj_material_ids):
                 face_indices = np.nonzero(material_indices == i)[0]
                 face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
-                faces = [obj.Shape.Faces[index] for index in face_indices]
-                compound = Part.makeCompound(faces)
+                compound = Part.makeCompound(faces[face_indices])
 
                 points, triangles = compound.tessellate(0.01)
                 points = [global_matrix * v for v in points]
