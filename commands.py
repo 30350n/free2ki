@@ -27,7 +27,7 @@ class Free2KiExport:
                 return
 
         document_path = Path(App.ActiveDocument.FileName)
-        path = document_path.parent / (document_path.stem + ".wrl")
+        path = document_path.parent / document_path.stem
 
         if path.exists():
             if path.is_file():

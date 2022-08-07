@@ -1,9 +1,10 @@
 from mat4cad import Material
 
-import Part
+import FreeCAD, Part
 
 import numpy as np
 from math import radians
+import gzip
 
 INCH_TO_MM = 1.0 / 2.54
 
@@ -11,9 +12,16 @@ MATERIALS_PROPERTY = "Free2KiMaterials"
 MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
 PROPERTIES = {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}
 
+def use_compression():
+    FSParam = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Free2Ki")
+    return FSParam.GetInt("VRMLCompression", 0) == 0
+
 def export_wrl(path, objects):
-    with open(str(path), "w") as file:
-        file.write(VRML_HEADER)
+    _open = gzip.open if use_compression() else open
+    path = path.with_suffix(".wrz" if use_compression() else ".wrl")
+
+    with _open(str(path), "wb") as file:
+        file.write(VRML_HEADER.encode())
 
         points_list = []
         triangles_list = []
@@ -47,7 +55,7 @@ def export_wrl(path, objects):
             for material_id, material in zip(obj_material_ids, materials):
                 if not material_id in material_ids:
                     material_string = MATERIAL_FORMAT.format(name=material_id, m=material)
-                    file.write(SHAPE_FORMAT.format(material_string))
+                    file.write(SHAPE_FORMAT.format(material_string).encode())
                 material_ids.append(material_id)
 
             global_matrix = obj.getGlobalPlacement().Matrix * obj.Placement.Matrix.inverse()
@@ -75,7 +83,7 @@ def export_wrl(path, objects):
                         material_id=material_id,
                         crease_angle=radians(30)
                     )
-                )
+                ).encode()
             )
 
 VRML_HEADER = "#VRML V2.0 utf8\n"
