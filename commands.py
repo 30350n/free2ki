@@ -1,4 +1,4 @@
-from export_wrl import export_wrl, MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY, PROPERTIES
+from export_vrml import export_vrml, MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY, PROPERTIES
 from mat4cad import *
 
 from FreeCAD import Gui
@@ -39,7 +39,7 @@ class Free2KiExport:
                     f"Failed to export. \"{path}\" exists and is not a file.")
                 return
 
-        export_wrl(path, objects)
+        export_vrml(path, objects)
         print(f"info: successfully exported \"{path.name}\"")
 
     def GetResources(self):

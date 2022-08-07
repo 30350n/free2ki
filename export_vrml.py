@@ -16,7 +16,7 @@ def use_compression():
     FSParam = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Free2Ki")
     return FSParam.GetInt("VRMLCompression", 0) == 0
 
-def export_wrl(path, objects):
+def export_vrml(path, objects):
     _open = gzip.open if use_compression() else open
     path = path.with_suffix(".wrz" if use_compression() else ".wrl")
 

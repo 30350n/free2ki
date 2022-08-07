@@ -19,7 +19,7 @@ integrates into my KiCad to Blender workflow
 3. Use the `Set Materials` tool, to setup the materials you want (this tool can be used
    multiple times to setup multiple materials, on a single object)
 4. Export the selected objects (or the whole file if nothing is selected) via the `Export`
-   tool. This will create a `<project_name>.wrl` file, in the same directory your FreeCAD
+   tool. This will create a `<project_name>.wrz` file, in the same directory your FreeCAD
    project file is in.
 5. (optional) Install the [pcb2blender](https://github.com/30350n/pcb2blender)
    Blender addon and import your model via<br>
