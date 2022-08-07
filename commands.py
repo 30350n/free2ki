@@ -254,7 +254,7 @@ class MaterialSelector(QWidget):
         super().__init__()
 
         self.custom_color = (0.8, 0.8, 0.8)
-        self.suppress_update = False
+        self.suppress_hexcode_update = False
 
         self.color_preview = ColorBox()
         self.combo_base_material = QComboBox()
@@ -313,7 +313,6 @@ class MaterialSelector(QWidget):
 
         old_active_color = self.combo_color.currentText()
 
-        self.suppress_update = True
         self.combo_color.clear()
         self.combo_color.addItems(list(colors.keys()))
         for i, color in enumerate(colors.values()):
@@ -325,7 +324,6 @@ class MaterialSelector(QWidget):
             self.combo_color.setCurrentText(old_active_color)
         else:
             self.combo_color.setCurrentIndex(0)
-        self.suppress_update = False
 
         variants = BASE_MATERIAL_VARIANTS[new_base_material]
         old_active_variant = self.combo_variant.currentText()
@@ -338,22 +336,18 @@ class MaterialSelector(QWidget):
             self.combo_variant.setCurrentIndex(len(variants) // 2)
 
     def on_color_change(self, new_color):
-        if self.suppress_update:
-            return
-
-        color = self.combo_color.itemData(self.combo_color.currentIndex(), Qt.DecorationRole)
-        self.color_hexcode.setReadOnly(new_color != "custom")
-        self.color_hexcode.setText(color.name()[1:])
-        self.color_preview.updateColor(color)
+        qcolor = self.combo_color.itemData(self.combo_color.currentIndex(), Qt.DecorationRole)
+        if qcolor and not self.suppress_hexcode_update:
+            self.color_hexcode.setReadOnly(new_color != "custom")
+            self.color_hexcode.setText(qcolor.name()[1:])
+        self.color_preview.updateColor(qcolor)
 
     def on_hexcode_change(self, new_hexcode):
         self.custom_color = r, g, b = hex2rgb(new_hexcode.rjust(6, "0"))
-        color = QColor(r*255, g*255, b*255)
-        self.color_preview.updateColor(color)
-
-        self.suppress_update = True
-        self.combo_color.setItemData(self.combo_color.currentIndex(), color, Qt.DecorationRole)
-        self.suppress_update = False
+        self.suppress_hexcode_update = True
+        self.combo_color.setItemData(self.combo_color.currentIndex(),
+            QColor(r*255, g*255, b*255), Qt.DecorationRole)
+        self.suppress_hexcode_update = False
 
 class ColorBox(QWidget):
     def __init__(self):
