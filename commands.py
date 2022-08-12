@@ -1,4 +1,4 @@
-from export_vrml import export_vrml, MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY, PROPERTIES
+from export_vrml import *
 from mat4cad import *
 
 from FreeCAD import Gui
@@ -28,6 +28,7 @@ class Free2KiExport:
 
         document_path = Path(App.ActiveDocument.FileName)
         path = document_path.parent / document_path.stem
+        path = path.with_suffix(".wrz" if use_compression() else ".wrl")
 
         if path.exists():
             if path.is_file():

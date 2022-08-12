@@ -18,7 +18,6 @@ def use_compression():
 
 def export_vrml(path, objects):
     _open = gzip.open if use_compression() else open
-    path = path.with_suffix(".wrz" if use_compression() else ".wrl")
 
     with _open(str(path), "wb") as file:
         file.write(VRML_HEADER.encode())
