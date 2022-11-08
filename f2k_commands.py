@@ -1,8 +1,7 @@
-from export_vrml import *
+from f2k_export_vrml import *
 from mat4cad import *
 
-from FreeCAD import Gui
-import FreeCAD as App
+import FreeCAD
 from PySide2.QtWidgets import *
 from PySide2.QtGui import *
 from PySide2.QtCore import QRect
@@ -14,7 +13,7 @@ import numpy as np
 
 class Free2KiExport:
     def Activated(self):
-        active_doc = App.ActiveDocument
+        active_doc = FreeCAD.ActiveDocument
         if not active_doc or not active_doc.FileName:
             QMessageBox.critical(None, "Error",
                 "Failed to export. Active Document is not saved.")
@@ -26,9 +25,9 @@ class Free2KiExport:
                     "Failed to export. Nothing to export.")
                 return
 
-        document_path = Path(App.ActiveDocument.FileName)
+        document_path = Path(FreeCAD.ActiveDocument.FileName)
         path = document_path.parent / document_path.stem
-        path = path.with_suffix(".wrz" if use_compression() else ".wrl")
+        path = path.with_suffix(".wrz" if prefs_use_compression() else ".wrl")
 
         if path.exists():
             if path.is_file():
@@ -54,7 +53,7 @@ class Free2KiExport:
 class Free2KiSetMaterials:
     def Activated(self):
         selection = {}
-        for element in App.Gui.Selection.getSelectionEx():
+        for element in FreeCAD.Gui.Selection.getSelectionEx():
             obj = element.Object
             if element.HasSubObjects and hasattr(obj, "Shape"):
                 faces = [
@@ -135,7 +134,7 @@ class Free2KiSetMaterials:
 
 def get_shape_objects(parents=None):
     if parents is None:
-        parents = App.Gui.Selection.getSelection()
+        parents = FreeCAD.Gui.Selection.getSelection()
 
     result = []
     for parent in parents:
@@ -373,13 +372,15 @@ class ColorBox(QWidget):
         painter.fillRect(rect, brush)
         painter.end()
 
-FREE2KI_CMD_EXPORT = "Free2KiExport"
-FREE2KI_CMD_SET_MATERIALS = "Free2KiSetMaterials"
+command_classes = (
+    Free2KiExport,
+    Free2KiSetMaterials
+)
 
-Gui.addCommand(FREE2KI_CMD_EXPORT, Free2KiExport())
-Gui.addCommand(FREE2KI_CMD_SET_MATERIALS, Free2KiSetMaterials())
+def register_commands():
+    commands = []
+    for cls in command_classes:
+        commands.append(cls.__name__)
+        FreeCAD.Gui.addCommand(cls.__name__, cls())
 
-cmds = [
-    FREE2KI_CMD_EXPORT,
-    FREE2KI_CMD_SET_MATERIALS,
-]
+    return commands

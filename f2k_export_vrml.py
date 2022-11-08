@@ -1,6 +1,7 @@
 from mat4cad import Material
 
 import FreeCAD, Part
+import MeshPart
 
 import numpy as np
 from math import radians
@@ -12,12 +13,14 @@ MATERIALS_PROPERTY = "Free2KiMaterials"
 MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
 PROPERTIES = {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}
 
-def use_compression():
+def prefs_use_compression():
     FSParam = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Free2Ki")
     return FSParam.GetInt("VRMLCompression", 0) == 0
 
-def export_vrml(path, objects):
-    _open = gzip.open if use_compression() else open
+def export_vrml(path, objects, use_compression=None):
+    if use_compression is None:
+        use_compression = prefs_use_compression()
+    _open = gzip.open if use_compression else open
 
     with _open(str(path), "wb") as file:
         file.write(VRML_HEADER.encode())
@@ -46,7 +49,7 @@ def export_vrml(path, objects):
                     ]
                     material_indices = np.array(indices)
 
-            elif hasattr(obj, "ViewObject"):
+            elif hasattr(obj, "ViewObject") and obj.ViewObject:
                 obj_material_ids = [name]
                 view = obj.ViewObject
                 materials = [Material(diffuse=view.ShapeColor, alpha=1.0-view.Transparency)]
@@ -64,10 +67,11 @@ def export_vrml(path, objects):
             for i, material_id in enumerate(obj_material_ids):
                 face_indices = np.nonzero(material_indices == i)[0]
                 face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
-                compound = Part.makeCompound(faces[face_indices])
-
-                points, triangles = compound.tessellate(0.01)
-                points = [global_matrix * v for v in points]
+                compound = Part.makeCompound(faces[face_indices]).cleaned()
+                mesh = MeshPart.meshFromShape(
+                    Shape=compound, LinearDeflection=0.01, AngularDeflection=radians(20))
+                points = [global_matrix * point.Vector for point in mesh.Points]
+                triangles = [facet.PointIndices for facet in mesh.Facets]
                 points_list.append(points)
                 triangles_list.append(triangles)
 
