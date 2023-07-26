@@ -68,6 +68,7 @@ def export_vrml(path, objects, use_compression=None):
                 face_indices = np.nonzero(material_indices == i)[0]
                 face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
                 compound = Part.makeCompound(faces[face_indices]).cleaned()
+
                 mesh = MeshPart.meshFromShape(
                     Shape=compound, LinearDeflection=0.01, AngularDeflection=radians(20))
                 points = [global_matrix * point.Vector for point in mesh.Points]
