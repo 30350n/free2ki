@@ -46,8 +46,7 @@ class Free2KiExport:
         return {
             "Pixmap": str((Path(__file__).parent / "icons" / "kicad.png").resolve()),
             "MenuText": "Export",
-            "Tooltip": 
-                "Export selected, visible objects (with children)."
+            "Tooltip": "Export selected, visible objects (with children)."
         }
 
 class Free2KiSetMaterials:
@@ -80,9 +79,9 @@ class Free2KiSetMaterials:
 
     @staticmethod
     def setup_material_indices(material, obj, faces=None):
-        if not MATERIALS_PROPERTY in obj.PropertiesList:
+        if MATERIALS_PROPERTY not in obj.PropertiesList:
             obj.addProperty("App::PropertyStringList", MATERIALS_PROPERTY)
-        if not MATERIAL_INDICES_PROPERTY in obj.PropertiesList:
+        if MATERIAL_INDICES_PROPERTY not in obj.PropertiesList:
             obj.addProperty("App::PropertyIntegerList", MATERIAL_INDICES_PROPERTY)
 
         if not faces:
@@ -128,8 +127,7 @@ class Free2KiSetMaterials:
         return {
             "Pixmap": str((Path(__file__).parent / "icons" / "material.png").resolve()),
             "MenuText": "Set Materials",
-            "Tooltip": 
-                "Set material for selected, visible objects."
+            "Tooltip": "Set material for selected, visible objects."
         }
 
 def get_shape_objects(parents=None):
@@ -216,7 +214,7 @@ class SelectMaterialDialog(QDialog):
         elif len(obj.ViewObject.DiffuseColor) > 1:
             colors = np.array(obj.ViewObject.DiffuseColor)
             colors.resize((len(obj.Shape.Faces), 4))
-            
+
             face_colors = colors[faces] if faces else colors
             unique_colors = np.unique(face_colors, axis=0)
             materials = [
@@ -316,10 +314,10 @@ class MaterialSelector(QWidget):
         self.combo_color.clear()
         self.combo_color.addItems(list(colors.keys()))
         for i, color in enumerate(colors.values()):
-            if type(color) == Material:
+            if isinstance(color, Material):
                 color = color.diffuse
-            r, g, b = color
-            self.combo_color.setItemData(i, QColor(r*255, g*255, b*255), Qt.DecorationRole)
+            qcolor = QColor(color[0] * 255, color[1] * 255, color[2] * 255)
+            self.combo_color.setItemData(i, qcolor, Qt.DecorationRole)
         if old_active_color in colors:
             self.combo_color.setCurrentText(old_active_color)
         else:
@@ -345,8 +343,8 @@ class MaterialSelector(QWidget):
     def on_hexcode_change(self, new_hexcode):
         self.custom_color = r, g, b = hex2rgb(new_hexcode.rjust(6, "0"))
         self.suppress_hexcode_update = True
-        self.combo_color.setItemData(self.combo_color.currentIndex(),
-            QColor(r*255, g*255, b*255), Qt.DecorationRole)
+        qcolor = QColor(r * 255, g * 255, b * 255)
+        self.combo_color.setItemData(self.combo_color.currentIndex(), qcolor, Qt.DecorationRole)
         self.suppress_hexcode_update = False
 
 class ColorBox(QWidget):

@@ -52,10 +52,10 @@ def export_vrml(path, objects, use_compression=None):
             elif hasattr(obj, "ViewObject") and obj.ViewObject:
                 obj_material_ids = [name]
                 view = obj.ViewObject
-                materials = [Material(diffuse=view.ShapeColor, alpha=1.0-view.Transparency)]
+                materials = [Material(diffuse=view.ShapeColor, alpha=1.0 - view.Transparency)]
 
             for material_id, material in zip(obj_material_ids, materials):
-                if not material_id in material_ids:
+                if material_id not in material_ids:
                     material_string = MATERIAL_FORMAT.format(name=material_id, m=material)
                     file.write(SHAPE_FORMAT.format(material_string).encode())
                 material_ids.append(material_id)
@@ -93,16 +93,16 @@ def export_vrml(path, objects, use_compression=None):
 VRML_HEADER = "#VRML V2.0 utf8\n"
 
 SHAPE_FORMAT = ""\
-	"Shape\n"\
-	"{{\n"\
-	"{}"\
+    "Shape\n"\
+    "{{\n"\
+    "{}"\
     "}}\n"
 
 MATERIAL_FORMAT = ""\
     "    appearance Appearance\n"\
     "    {{\n"\
     "        material DEF {name} Material\n"\
-	"        {{\n"\
+    "        {{\n"\
     "            diffuseColor {m.diffuse[0]:.4g} {m.diffuse[1]:.4g} {m.diffuse[2]:.4g}\n"\
     "            emissiveColor {m.emission[0]:.4g} {m.emission[1]:.4g} {m.emission[2]:.4g}\n"\
     "            shininess {m.shininess:.4g}\n"\
@@ -113,12 +113,12 @@ MATERIAL_FORMAT = ""\
     "    }}\n"
 
 MESH_FORMAT = ""\
-	"    geometry IndexedFaceSet\n"\
-	"    {{\n"\
+    "    geometry IndexedFaceSet\n"\
+    "    {{\n"\
     "        creaseAngle {crease_angle:.4g}\n"\
     "        coordIndex [{indices}]\n"\
-	"        coord Coordinate\n"\
-	"        {{\n"\
+    "        coord Coordinate\n"\
+    "        {{\n"\
     "            point[{points}]\n"\
     "        }}\n"\
     "    }}\n"\
