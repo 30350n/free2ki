@@ -157,10 +157,15 @@ class SelectMaterialDialog(QDialog):
         self.material_selectors = []
         names = (obj._Body.Label if hasattr(obj, "_Body") else obj.Label for obj in selection)
         for name, obj, faces in sorted(zip(names, *zip(*selection.items()))):
-            if len(selection) > 1:
+            existing_materials = self.get_existing_materials(obj, faces)
+
+            if len(selection) > 1 and len(existing_materials) <= 1:
                 box_materials.addWidget(QLabel(name))
 
-            for sub_faces, material in self.get_existing_materials(obj, faces):
+            for sub_faces, material in existing_materials:
+                if len(existing_materials) > 1:
+                    label = f"{name} {np.array2string(sub_faces, threshold=7)}"
+                    box_materials.addWidget(QLabel(label))
                 material_selector = MaterialSelector(material)
                 box_materials.addWidget(material_selector)
                 self.material_selectors.append((obj, sub_faces, material_selector))
