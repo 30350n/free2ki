@@ -59,7 +59,7 @@ class Free2KiSetMaterials:
                     int(name[4:]) - 1
                     for name in element.SubElementNames if name.startswith("Face")
                 ]
-                selection[obj] = faces
+                selection[obj] = np.array(faces)
             else:
                 for child in get_shape_objects([obj]):
                     selection[child] = None
@@ -84,7 +84,7 @@ class Free2KiSetMaterials:
         if MATERIAL_INDICES_PROPERTY not in obj.PropertiesList:
             obj.addProperty("App::PropertyIntegerList", MATERIAL_INDICES_PROPERTY)
 
-        if not faces:
+        if faces is None:
             setattr(obj, MATERIALS_PROPERTY, [material.name])
             setattr(obj, MATERIAL_INDICES_PROPERTY, [0] * len(obj.Shape.Faces))
             obj.ViewObject.Transparency = int(material.transparency * 99.0)
@@ -203,12 +203,14 @@ class SelectMaterialDialog(QDialog):
             material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
             material_indices.resize(len(obj.Shape.Faces))
 
-            face_material_indices = material_indices[faces] if faces else material_indices
+            face_material_indices = (
+                material_indices[faces] if faces is not None else material_indices
+            )
             unique_material_indices = np.unique(face_material_indices)
             materials = [Material.from_name(name) for name in getattr(obj, MATERIALS_PROPERTY)]
 
             return [
-                (np.nonzero(index == face_material_indices), materials[index])
+                (faces[np.nonzero(index == face_material_indices)], materials[index])
                 for index in unique_material_indices
             ]
         elif len(obj.ViewObject.DiffuseColor) > 1:
@@ -223,7 +225,7 @@ class SelectMaterialDialog(QDialog):
             ]
 
             return [
-                (np.nonzero(np.all(color == face_colors, axis=1)), materials[index])
+                (faces[np.nonzero(np.all(color == face_colors, axis=1))], materials[index])
                 for index, color in enumerate(unique_colors)
             ]
         else:
