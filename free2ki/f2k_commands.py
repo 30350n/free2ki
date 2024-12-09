@@ -204,13 +204,14 @@ class SelectMaterialDialog(QDialog):
 
     @staticmethod
     def get_existing_materials(obj, faces):
+        if faces is None:
+            faces = np.arange(len(obj.Shape.Faces))
+
         if PROPERTIES.issubset(obj.PropertiesList) and getattr(obj, MATERIALS_PROPERTY):
             material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY), dtype=int)
             material_indices.resize(len(obj.Shape.Faces))
 
-            face_material_indices = (
-                material_indices[faces] if faces is not None else material_indices
-            )
+            face_material_indices = material_indices[faces]
             unique_material_indices = np.unique(face_material_indices)
             materials = [Material.from_name(name) for name in getattr(obj, MATERIALS_PROPERTY)]
 
@@ -222,7 +223,7 @@ class SelectMaterialDialog(QDialog):
             colors = np.array(obj.ViewObject.DiffuseColor)
             colors.resize((len(obj.Shape.Faces), 4))
 
-            face_colors = colors[faces] if faces else colors
+            face_colors = colors[faces]
             unique_colors = np.unique(face_colors, axis=0)
             materials = [
                 Material.from_name(f"plastic-custom_{rgb2hex(color)}-semi_matte")
