@@ -25,17 +25,19 @@ def build_freecad_package(
 
     workbench = package_metadata.find("content", NAMESPACES).find("workbench", NAMESPACES)
     subdirectory = workbench.find("subdirectory", NAMESPACES).text
+    package_path = path / subdirectory
 
     version_name = f"free2ki_v{version.replace('.', '-')}"
     zip_file_path = output_path / f"{version_name}.zip"
     with ZipFile(zip_file_path, mode="w", compression=ZIP_DEFLATED) as zip_file:
-        extra_paths = (path / subdirectory / extra_file for extra_file in extra_files)
-        for filepath in chain((path / subdirectory).glob("**/*.py"), extra_paths):
+        paths = chain(
+            package_path.glob("**/*.py"),
+            package_path.glob("**/*.ui"),
+            (package_path / extra_file for extra_file in extra_files),
+            (path / filename for filename in DEFAULT_FILES)
+        )
+        for filepath in paths:
             zip_file.write(filepath, f"{version_name}/{filepath.relative_to(path)}")
-
-        for filename in DEFAULT_FILES:
-            filepath = path / filename
-            zip_file.write(filepath, f"{version_name}/{filename}")
 
 if __name__ == "__main__":
     parser = ArgumentParser()
