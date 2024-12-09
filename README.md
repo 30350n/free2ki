@@ -1,9 +1,9 @@
-[![freecad](https://img.shields.io/badge/freecad-0.20.0-brightgreen)](https://www.freecadweb.org/)
-[![gplv3](https://img.shields.io/badge/license-GPLv3-lightgrey)](https://www.gnu.org/licenses/gpl-3.0.txt)
+[![freecad](https://img.shields.io/badge/FreeCAD-1.0.0-red)](https://www.freecadweb.org/)
+[![gplv3](https://img.shields.io/badge/License-GPLv3-lightgrey)](https://www.gnu.org/licenses/gpl-3.0.txt)
 
 <img src="images/header.jpg"/>
 
-The free2ki [FreeCAD](https://github.com/FreeCAD/FreeCAD) workbench enables you to apply
+The `free2ki` [FreeCAD](https://github.com/FreeCAD/FreeCAD) workbench enables you to apply
 materials to 3D models in FreeCAD, as well as to easily export them to VRML (.wrl) files,
 with correctly applied rotation and scaling, for use in KiCad as well as Blender.
 
@@ -23,9 +23,7 @@ integrates into my KiCad to Blender workflow
    project file is in.
 5. (optional) Install the [pcb2blender](https://github.com/30350n/pcb2blender)
    Blender addon and import your model via<br>
-   `File -> Import -> X3D (.x3d/.wrl)`.<br>
-   (installing the pcb2blender addon is necessary, otherwise the mat4cad materials won't be
-   recognized properly)
+   `File -> Import -> X3D/VRML (.x3d/.wrl) (for pcb3d)`.<br>
 
 ### Materials
 
