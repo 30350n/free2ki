@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+<package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
+  <name>free2ki</name>
+  <description>Export your 3D models to VRML files, with correctly applied rotation and scaling, for use in KiCad as well as Blender.</description>
+  <version>1.0</version>
+  <freecadmin>0.20.0</freecadmin>
+  <date>2024-12-09</date>
+  <maintainer email="mail@30350n.de">30350n</maintainer>
+  <license file="LICENSE">GPL-3.0-or-later</license>
+  <url type="repository" branch="master">https://github.com/30350n/free2ki</url>
+  <url type="readme">https://github.com/30350n/free2ki/blob/master/README.md</url>
+  <icon>free2ki/icons/kicad.svg</icon>
+  <content>
+    <workbench>
+      <name>free2ki</name>
+      <classname>Free2KiWorkbench</classname>
+      <subdirectory>free2ki</subdirectory>
+    </workbench>
+  </content>
+</package>
