@@ -39,7 +39,7 @@ next update!
 - (not available yet) via the builtin addon manager
   `Tools -> Addon manager -> Workbenches -> free2ki`
 
-- (manual) Download the `free2ki.zip` from the
+- (manual) Download the `free2ki_<version>.zip` from the
   [latest release](https://github.com/30350n/free2ki/releases/latest)
   and unpack its contents into your
   [FreeCAD Mod folder](https://wiki.freecadweb.org/Installing_more_workbenches#Installing_for_a_single_user).
