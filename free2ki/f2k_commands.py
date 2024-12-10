@@ -77,6 +77,12 @@ class Free2KiSetMaterials:
         for obj in selection:
             self.recalculate_materials(obj)
 
+        objects_to_recompute = set().union(*(
+            {obj, *(parent for parent, _ in obj.Parents)}
+            for obj in selection
+        ))
+        FreeCAD.ActiveDocument.recompute(list(objects_to_recompute))
+
     @staticmethod
     def setup_material_indices(material, obj, faces=None):
         if MATERIALS_PROPERTY not in obj.PropertiesList:
