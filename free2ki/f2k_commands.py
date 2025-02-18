@@ -2,9 +2,9 @@ from f2k_export_vrml import *
 from mat4cad import *
 
 import FreeCAD
-from PySide2.QtWidgets import *
-from PySide2.QtGui import *
-from PySide2.QtCore import QRect
+from PySide.QtWidgets import *
+from PySide.QtGui import *
+from PySide.QtCore import QRect
 
 import string
 from pathlib import Path
