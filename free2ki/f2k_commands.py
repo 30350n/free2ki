@@ -32,7 +32,7 @@ class Free2KiExport:
         if path.exists():
             if path.is_file():
                 if QMessageBox.question(None, "Overwrite?",
-                        f"\"{path}\" already exists. Overwrite?") == QMessageBox.No:
+                        f"\"{path}\" already exists. Overwrite?") == QMessageBox.StandardButton.No:
                     return
             else:
                 QMessageBox.critical(None, "Error",
@@ -282,7 +282,7 @@ class MaterialSelector(QWidget):
         self.color_hexcode.setMaxLength(6)
         self.color_hexcode.setInputMask("HHHHHH")
         font_metrics = QFontMetrics(self.font(), self)
-        width = max((font_metrics.widthChar(c) for c in string.hexdigits)) * 6
+        width = max((font_metrics.horizontalAdvance(c * 6) for c in string.hexdigits)) + 10
         self.color_hexcode.setFixedWidth(width)
 
         self.combo_color.setSizePolicy(QSizePolicy.MinimumExpanding, QSizePolicy.Ignored)
