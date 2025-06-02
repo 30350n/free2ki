@@ -1,4 +1,6 @@
 from pathlib import Path
+
+import numpy as np
 from PIL import Image, ImageFilter
 
 MODEL_DIR = Path("E:\\projects\\modular\\kicad\\protorack-kicad\\3dmodels\\Protorack.3dshapes")
@@ -25,9 +27,9 @@ for i, model in enumerate(MODELS):
     combined.paste(cropped, (900 * i, 0))
 
     grayscale = cropped.convert("L")
-    threshold = grayscale.point(lambda v: 255 if v > 44 else 0)
+    threshold = grayscale.point((np.arange(256) > 44) * 255)
     blurred = threshold.filter(ImageFilter.GaussianBlur(15))
-    mono = blurred.point(lambda v: 255 if v > 5 else 0)
+    mono = blurred.point((np.arange(256) > 5) * 255)
     mask.paste(mono, (900 * i, 0))
 
 combined.save("template.png")

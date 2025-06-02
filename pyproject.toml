@@ -1,2 +1,39 @@
+[project]
+name = "free2ki"
+version = "1.1"
+requires-python = "==3.11.*"
+dependencies = ["numpy", "pyside6"]
+
+[dependency-groups]
+dev = ["freecad-stubs", "pillow", "ruff"]
+
+[tool.pyright]
+exclude = ["**/blender", ".venv"]
+typeCheckingMode = "strict"
+reportIgnoreCommentWithoutRule = "warning"
+reportImplicitRelativeImport = "warning"
+reportMissingModuleSource = false
+reportUnnecessaryTypeIgnoreComment = "warning"
+reportUnknownArgumentType = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
+
 [tool.ruff]
 line-length = 100
+
+[tool.ruff.lint]
+ignore = ["F403", "F405"]
+
+[tool.ruff.lint.isort]
+combine-as-imports = true
+section-order = [
+    "future",
+    "standard-library",
+    "third-party",
+    "freecad",
+    "first-party",
+    "local-folder",
+]
+
+[tool.ruff.lint.isort.sections]
+freecad = ["FreeCAD", "FreeCADGui", "MeshPart", "Part"]

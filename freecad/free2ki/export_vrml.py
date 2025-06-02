@@ -1,25 +1,33 @@
-from mat4cad import Material
-
-import FreeCAD, Part
-import MeshPart
+import gzip
+from math import radians
+from pathlib import Path
 
 import numpy as np
-from math import radians
-import gzip
+
+import FreeCAD
+import MeshPart
+import Part
+
+from .mat4cad import Material
 
 INCH_TO_MM = 1.0 / 2.54
 
-MATERIALS_PROPERTY = "Free2KiMaterials"
-MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
-PROPERTIES = {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}
+
+class FREE2KI_PROPS:
+    MATERIALS = "Free2KiMaterials"
+    MATERIAL_INDICES = "Free2KiMaterialIndices"
+
+    ALL = {MATERIALS, MATERIAL_INDICES}
 
 
 def prefs_use_compression():
-    FSParam = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Free2Ki")
-    return FSParam.GetInt("VRMLCompression", 0) == 0
+    FSParam: FreeCAD.ParameterGrp = FreeCAD.ParamGet(
+        "User parameter:BaseApp/Preferences/Mod/Free2Ki"
+    )
+    return bool(FSParam.GetInt("VRMLCompression", 0) == 0)
 
 
-def export_vrml(path, objects, use_compression=None):
+def export_vrml(path: Path, objects: list[FreeCAD.GeoFeature], use_compression: bool | None = None):
     if use_compression is None:
         use_compression = prefs_use_compression()
     _open = gzip.open if use_compression else open
@@ -31,18 +39,20 @@ def export_vrml(path, objects, use_compression=None):
         triangles_list = []
         material_ids = []
         for obj in objects:
-            name = obj._Body.Label if hasattr(obj, "_Body") else obj.Label
+            name = getattr(obj, "_Body", obj).Label
             print(f'info: exporting "{name}"')
+
+            assert (shape := obj.getPropertyOfGeometry())
 
             obj_material_ids = ["default"]
             materials = [Material()]
-            material_indices = np.zeros(len(obj.Shape.Faces), dtype=int)
+            material_indices = np.zeros(len(shape.Faces), dtype=int)
 
-            if hasattr(obj, MATERIALS_PROPERTY):
-                if (ids := getattr(obj, MATERIALS_PROPERTY)) in ([], [""]):
-                    print(f"warning: {name}.{MATERIALS_PROPERTY} is empty")
-                elif not (indices := getattr(obj, MATERIAL_INDICES_PROPERTY)):
-                    print(f"warning: {name}.{MATERIAL_INDICES_PROPERTY} is empty")
+            if hasattr(obj, FREE2KI_PROPS.MATERIALS):
+                if (ids := getattr(obj, FREE2KI_PROPS.MATERIALS)) in ([], [""]):
+                    print(f"warning: {name}.{FREE2KI_PROPS.MATERIALS} is empty")
+                elif not (indices := getattr(obj, FREE2KI_PROPS.MATERIAL_INDICES)):
+                    print(f"warning: {name}.{FREE2KI_PROPS.MATERIAL_INDICES} is empty")
                 else:
                     obj_material_ids = ids
                     materials = [
@@ -54,7 +64,9 @@ def export_vrml(path, objects, use_compression=None):
             elif hasattr(obj, "ViewObject") and obj.ViewObject:
                 obj_material_ids = [name]
                 view = obj.ViewObject
-                materials = [Material(diffuse=view.ShapeColor, alpha=1.0 - view.Transparency)]
+                assert (color := getattr(view, "ShapeColor"))
+                assert (transparency := getattr(view, "Transparency"))
+                materials = [Material(diffuse=color, alpha=1.0 - transparency)]
 
             for material_id, material in zip(obj_material_ids, materials):
                 if material_id not in material_ids:
@@ -65,10 +77,10 @@ def export_vrml(path, objects, use_compression=None):
             global_matrix = obj.getGlobalPlacement().Matrix * obj.Placement.Matrix.inverse()
             global_matrix.scale(INCH_TO_MM, INCH_TO_MM, INCH_TO_MM)
 
-            faces = np.array(obj.Shape.Faces)
+            faces = np.array(shape.Faces)
             for i, material_id in enumerate(obj_material_ids):
                 face_indices = np.nonzero(material_indices == i)[0]
-                face_indices = np.extract(face_indices < len(obj.Shape.Faces), face_indices)
+                face_indices = np.extract(face_indices < len(shape.Faces), face_indices)
                 compound = Part.makeCompound(faces[face_indices]).cleaned()
 
                 mesh = MeshPart.meshFromShape(
