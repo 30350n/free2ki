@@ -14,7 +14,7 @@
     <workbench>
       <name>free2ki</name>
       <classname>Free2KiWorkbench</classname>
-      <subdirectory>free2ki</subdirectory>
+      <subdirectory>freecad/free2ki</subdirectory>
     </workbench>
   </content>
 </package>
