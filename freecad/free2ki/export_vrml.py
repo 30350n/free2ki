@@ -13,9 +13,11 @@ MATERIALS_PROPERTY = "Free2KiMaterials"
 MATERIAL_INDICES_PROPERTY = "Free2KiMaterialIndices"
 PROPERTIES = {MATERIALS_PROPERTY, MATERIAL_INDICES_PROPERTY}
 
+
 def prefs_use_compression():
     FSParam = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/Free2Ki")
     return FSParam.GetInt("VRMLCompression", 0) == 0
+
 
 def export_vrml(path, objects, use_compression=None):
     if use_compression is None:
@@ -30,7 +32,7 @@ def export_vrml(path, objects, use_compression=None):
         material_ids = []
         for obj in objects:
             name = obj._Body.Label if hasattr(obj, "_Body") else obj.Label
-            print(f"info: exporting \"{name}\"")
+            print(f'info: exporting "{name}"')
 
             obj_material_ids = ["default"]
             materials = [Material()]
@@ -70,7 +72,8 @@ def export_vrml(path, objects, use_compression=None):
                 compound = Part.makeCompound(faces[face_indices]).cleaned()
 
                 mesh = MeshPart.meshFromShape(
-                    Shape=compound, LinearDeflection=0.01, AngularDeflection=radians(20))
+                    Shape=compound, LinearDeflection=0.01, AngularDeflection=radians(20)
+                )
                 points = [global_matrix * point.Vector for point in mesh.Points]
                 triangles = [facet.PointIndices for facet in mesh.Facets]
                 points_list.append(points)
@@ -85,44 +88,45 @@ def export_vrml(path, objects, use_compression=None):
                         points=points_str,
                         indices=indices_str,
                         material_id=material_id,
-                        crease_angle=radians(30)
+                        crease_angle=radians(30),
                     )
                 ).encode()
             )
 
+
 VRML_HEADER = "#VRML V2.0 utf8\n"
 
-SHAPE_FORMAT = ""\
-    "Shape\n"\
-    "{{\n"\
-    "{}"\
-    "}}\n"
+SHAPE_FORMAT = "Shape\n{{\n{}}}\n"
 
-MATERIAL_FORMAT = ""\
-    "    appearance Appearance\n"\
-    "    {{\n"\
-    "        material DEF {name} Material\n"\
-    "        {{\n"\
-    "            diffuseColor {m.diffuse[0]:.4g} {m.diffuse[1]:.4g} {m.diffuse[2]:.4g}\n"\
-    "            emissiveColor {m.emission[0]:.4g} {m.emission[1]:.4g} {m.emission[2]:.4g}\n"\
-    "            shininess {m.shininess:.4g}\n"\
-    "            specularColor 0.0 0.0 0.0\n"\
-    "            transparency {m.transparency:.4g}\n"\
-    "            ambientIntensity 0.2\n"\
-    "        }}\n"\
+MATERIAL_FORMAT = (
+    ""
+    "    appearance Appearance\n"
+    "    {{\n"
+    "        material DEF {name} Material\n"
+    "        {{\n"
+    "            diffuseColor {m.diffuse[0]:.4g} {m.diffuse[1]:.4g} {m.diffuse[2]:.4g}\n"
+    "            emissiveColor {m.emission[0]:.4g} {m.emission[1]:.4g} {m.emission[2]:.4g}\n"
+    "            shininess {m.shininess:.4g}\n"
+    "            specularColor 0.0 0.0 0.0\n"
+    "            transparency {m.transparency:.4g}\n"
+    "            ambientIntensity 0.2\n"
+    "        }}\n"
     "    }}\n"
+)
 
-MESH_FORMAT = ""\
-    "    geometry IndexedFaceSet\n"\
-    "    {{\n"\
-    "        creaseAngle {crease_angle:.4g}\n"\
-    "        coordIndex [{indices}]\n"\
-    "        coord Coordinate\n"\
-    "        {{\n"\
-    "            point[{points}]\n"\
-    "        }}\n"\
-    "    }}\n"\
-    "    appearance Appearance\n"\
-    "    {{\n"\
-    "        material USE {material_id}\n"\
+MESH_FORMAT = (
+    ""
+    "    geometry IndexedFaceSet\n"
+    "    {{\n"
+    "        creaseAngle {crease_angle:.4g}\n"
+    "        coordIndex [{indices}]\n"
+    "        coord Coordinate\n"
+    "        {{\n"
+    "            point[{points}]\n"
+    "        }}\n"
     "    }}\n"
+    "    appearance Appearance\n"
+    "    {{\n"
+    "        material USE {material_id}\n"
+    "    }}\n"
+)

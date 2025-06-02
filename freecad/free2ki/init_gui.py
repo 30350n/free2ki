@@ -6,7 +6,7 @@ class Free2KiWorkbench(Workbench):
     ICONS_DIR = BASE_DIR / "icons"
 
     MenuText = "Free2Ki"
-    Tooltip  = "Free2Ki Workbench"
+    Tooltip = "Free2Ki Workbench"
     Icon = str(ICONS_DIR / "kicad.png")
 
     def Initialize(self):
@@ -18,5 +18,6 @@ class Free2KiWorkbench(Workbench):
 
         Gui.addPreferencePage(str(self.BASE_DIR / "free2ki_preferences.ui"), "Free2Ki")
         Gui.addIconPath(str(self.ICONS_DIR))
+
 
 Gui.addWorkbench(Free2KiWorkbench())

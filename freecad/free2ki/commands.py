@@ -11,18 +11,17 @@ from pathlib import Path
 from math import ceil
 import numpy as np
 
+
 class Free2KiExport:
     def Activated(self):
         active_doc = FreeCAD.ActiveDocument
         if not active_doc or not active_doc.FileName:
-            QMessageBox.critical(None, "Error",
-                "Failed to export. Active Document is not saved.")
+            QMessageBox.critical(None, "Error", "Failed to export. Active Document is not saved.")
             return
 
         if not (objects := get_shape_objects()):
             if not (objects := get_shape_objects(active_doc.RootObjects)):
-                QMessageBox.critical(None, "Error",
-                    "Failed to export. Nothing to export.")
+                QMessageBox.critical(None, "Error", "Failed to export. Nothing to export.")
                 return
 
         document_path = Path(FreeCAD.ActiveDocument.FileName)
@@ -31,23 +30,29 @@ class Free2KiExport:
 
         if path.exists():
             if path.is_file():
-                if QMessageBox.question(None, "Overwrite?",
-                        f"\"{path}\" already exists. Overwrite?") == QMessageBox.StandardButton.No:
+                if (
+                    QMessageBox.question(None, "Overwrite?", f'"{path}" already exists. Overwrite?')
+                    == QMessageBox.StandardButton.No
+                ):
                     return
             else:
-                QMessageBox.critical(None, "Error",
-                    f"Failed to export. \"{path}\" exists and is not a file.")
+                QMessageBox.critical(
+                    None,
+                    "Error",
+                    f'Failed to export. "{path}" exists and is not a file.',
+                )
                 return
 
         export_vrml(path, objects)
-        print(f"info: successfully exported \"{path.name}\"")
+        print(f'info: successfully exported "{path.name}"')
 
     def GetResources(self):
         return {
             "Pixmap": str((Path(__file__).parent / "icons" / "kicad.png").resolve()),
             "MenuText": "Export",
-            "Tooltip": "Export selected, visible objects (with children)."
+            "Tooltip": "Export selected, visible objects (with children).",
         }
+
 
 class Free2KiSetMaterials:
     def Activated(self):
@@ -56,8 +61,7 @@ class Free2KiSetMaterials:
             obj = element.Object
             if element.HasSubObjects and hasattr(obj, "Shape"):
                 faces = [
-                    int(name[4:]) - 1
-                    for name in element.SubElementNames if name.startswith("Face")
+                    int(name[4:]) - 1 for name in element.SubElementNames if name.startswith("Face")
                 ]
                 selection[obj] = np.array(faces)
             else:
@@ -65,8 +69,7 @@ class Free2KiSetMaterials:
                     selection[child] = None
 
         if not selection:
-            QMessageBox.critical(None, "Error",
-                "Failed to set material. Nothing is selected.")
+            QMessageBox.critical(None, "Error", "Failed to set material. Nothing is selected.")
             return
 
         if not (selected_materials := SelectMaterialDialog(selection).execute()):
@@ -77,10 +80,9 @@ class Free2KiSetMaterials:
         for obj in selection:
             self.recalculate_materials(obj)
 
-        objects_to_recompute = set().union(*(
-            {obj, *(parent for parent, _ in obj.Parents)}
-            for obj in selection
-        ))
+        objects_to_recompute = set().union(
+            *({obj, *(parent for parent, _ in obj.Parents)} for obj in selection)
+        )
         FreeCAD.ActiveDocument.recompute(list(objects_to_recompute))
 
     @staticmethod
@@ -110,17 +112,19 @@ class Free2KiSetMaterials:
     def recalculate_materials(obj):
         materials = np.array(getattr(obj, MATERIALS_PROPERTY), dtype=object)
         material_indices = np.array(getattr(obj, MATERIAL_INDICES_PROPERTY))
-        material_indices = material_indices[:len(obj.Shape.Faces)]
+        material_indices = material_indices[: len(obj.Shape.Faces)]
 
         used_materials = list({materials[index] for index in set(material_indices)})
         index_mapping = np.zeros(len(materials), dtype=int)
         for i, name in enumerate(used_materials):
             for index in np.where(materials == name):
                 index_mapping[index] = i
-        colors = np.array([
-            mat.diffuse if (mat := Material.from_name(name)) else (0.0, 0.0, 0.0)
-            for name in used_materials
-        ])
+        colors = np.array(
+            [
+                mat.diffuse if (mat := Material.from_name(name)) else (0.0, 0.0, 0.0)
+                for name in used_materials
+            ]
+        )
 
         remapped_indices = index_mapping[material_indices]
         diffuse_color = colors[remapped_indices]
@@ -133,8 +137,9 @@ class Free2KiSetMaterials:
         return {
             "Pixmap": str((Path(__file__).parent / "icons" / "material.png").resolve()),
             "MenuText": "Set Materials",
-            "Tooltip": "Set material for selected, visible objects."
+            "Tooltip": "Set material for selected, visible objects.",
         }
+
 
 def get_shape_objects(parents=None):
     if parents is None:
@@ -151,6 +156,7 @@ def get_shape_objects(parents=None):
                 result.append(parent)
 
     return list(set(result))
+
 
 class SelectMaterialDialog(QDialog):
     MAX_HEIGHT = 300
@@ -237,7 +243,10 @@ class SelectMaterialDialog(QDialog):
             ]
 
             return [
-                (faces[np.nonzero(np.all(color == face_colors, axis=1))], materials[index])
+                (
+                    faces[np.nonzero(np.all(color == face_colors, axis=1))],
+                    materials[index],
+                )
                 for index, color in enumerate(unique_colors)
             ]
         else:
@@ -247,9 +256,7 @@ class SelectMaterialDialog(QDialog):
             else:
                 material = Material.from_name(f"plastic-custom_{rgb2hex(color)}-semi_matte")
 
-            return [
-                (faces, material)
-            ]
+            return [(faces, material)]
 
     def set_material(self):
         self.accept()
@@ -260,6 +267,7 @@ class SelectMaterialDialog(QDialog):
                 (obj, faces, material_selector.get_material())
                 for (obj, faces, material_selector) in self.material_selectors
             ]
+
 
 class MaterialSelector(QWidget):
     def __init__(self, material=None):
@@ -298,7 +306,7 @@ class MaterialSelector(QWidget):
             self.combo_variant.setCurrentText(material.variant)
 
         layout = QHBoxLayout()
-        layout.addItem(QSpacerItem( 4, 0))
+        layout.addItem(QSpacerItem(4, 0))
         layout.addWidget(self.color_preview)
         layout.addItem(QSpacerItem(10, 0))
         layout.addWidget(self.combo_base_material)
@@ -308,7 +316,7 @@ class MaterialSelector(QWidget):
         layout.addWidget(self.color_hexcode)
         layout.addItem(QSpacerItem(10, 0))
         layout.addWidget(self.combo_variant)
-        layout.addItem(QSpacerItem( 4, 0))
+        layout.addItem(QSpacerItem(4, 0))
         self.setLayout(layout)
 
     def get_material(self):
@@ -361,6 +369,7 @@ class MaterialSelector(QWidget):
         self.combo_color.setItemData(self.combo_color.currentIndex(), qcolor, Qt.DecorationRole)
         self.suppress_hexcode_update = False
 
+
 class ColorBox(QWidget):
     def __init__(self):
         super().__init__()
@@ -384,10 +393,9 @@ class ColorBox(QWidget):
         painter.fillRect(rect, brush)
         painter.end()
 
-command_classes = (
-    Free2KiExport,
-    Free2KiSetMaterials
-)
+
+command_classes = (Free2KiExport, Free2KiSetMaterials)
+
 
 def register_commands():
     commands = []
