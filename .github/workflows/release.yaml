@@ -7,19 +7,18 @@ jobs:
     name: Build free2ki FreeCAD Package
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
         with:
+          persist-credentials: false
           submodules: recursive
-      - name: Set up Python
-        uses: actions/setup-python@v5
+      - uses: astral-sh/setup-uv@v5
+      - uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version-file: "pyproject.toml"
       - name: Build FreeCAD Package
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          pip install requests
           NAME="free2ki_$(sed "s/-/_/;s/\./-/g" <<< $GITHUB_REF_NAME).zip"
           python .github/workflows/build_freecad_package.py \
             --extra-files icons/kicad.png icons/material.png icons/preferences-free2ki.svg
