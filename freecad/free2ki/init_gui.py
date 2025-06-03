@@ -11,7 +11,7 @@ ICONS_DIR = BASE_DIR / "icons"
 class Free2KiWorkbench(Gui.Workbench):
     MenuText = "Free2Ki"
     Tooltip = "Free2Ki Workbench"
-    Icon = str(ICONS_DIR / "kicad.png")
+    Icon = str(ICONS_DIR / "kicad-export.png")
 
     def Initialize(self):
         cmds = register_commands()

@@ -20,8 +20,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           NAME="free2ki_$(sed "s/-/_/;s/\./-/g" <<< $GITHUB_REF_NAME).zip"
-          python .github/workflows/build_freecad_package.py \
-            --extra-files icons/kicad.png icons/material.png icons/preferences-free2ki.svg
+          python .github/workflows/build_freecad_package.py --extra-files icons/
           sha256sum $NAME | cut -c -64 | tr -d "\n" > $NAME.sha256
           gh release upload $GITHUB_REF_NAME $NAME
           gh release upload $GITHUB_REF_NAME $NAME.sha256

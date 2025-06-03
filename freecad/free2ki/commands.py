@@ -61,7 +61,7 @@ class Free2KiExport:
 
     def GetResources(self):
         return {
-            "Pixmap": str((Path(__file__).parent / "icons" / "kicad.png").resolve()),
+            "Pixmap": str((Path(__file__).parent / "icons" / "kicad-export.png").resolve()),
             "MenuText": "Export",
             "Tooltip": "Export selected, visible objects (with children).",
         }
@@ -445,8 +445,8 @@ def question(title: str, text: str):
 
 
 command_classes = (
-    Free2KiExport,
     Free2KiSetMaterials,
+    Free2KiExport,
 )
 
 
