@@ -3,7 +3,7 @@ requires-python = "==3.11.*"
 
 [[package]]
 name = "free2ki"
-version = "1.0"
+version = "1.1"
 source = { virtual = "." }
 dependencies = [
     { name = "numpy" },
