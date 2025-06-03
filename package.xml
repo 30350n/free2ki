@@ -7,8 +7,8 @@
   <date>2025-06-03</date>
   <maintainer email="mail@30350n.de">30350n</maintainer>
   <license file="LICENSE">GPL-3.0-or-later</license>
-  <url type="repository" branch="master">https://github.com/30350n/free2ki</url>
-  <url type="readme">https://github.com/30350n/free2ki/blob/master/README.md</url>
+  <url type="repository" branch="freecad-addons">https://github.com/30350n/free2ki</url>
+  <url type="readme">https://github.com/30350n/free2ki/blob/freecad-addons/README.md</url>
   <icon>free2ki/icons/kicad-export.svg</icon>
   <content>
     <workbench>
