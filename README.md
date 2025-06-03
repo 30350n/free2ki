@@ -3,14 +3,9 @@
 
 <img src="images/header.jpg" alt="free2ki headline image"/>
 
-The `free2ki` [FreeCAD](https://github.com/FreeCAD/FreeCAD) workbench enables you to apply
-materials to 3D models in FreeCAD, as well as to easily export them to VRML (.wrl/.wrz) files
-with correctly applied rotation and scaling for use in KiCad as well as Blender.
+The `free2ki` [FreeCAD](https://github.com/FreeCAD/FreeCAD) workbench enables you to apply materials to 3D models in FreeCAD, as well as to easily export them to VRML (.wrl/.wrz) files with correctly applied rotation and scaling for use in KiCad as well as Blender.
 
-I created it as I wanted a fast to use, simple and less buggy/bloated alternative to the
-[kicadStepUp](https://github.com/easyw/kicadStepUpMod) workbench that just works and better
-integrates into my KiCad to Blender workflow
-([pcb2blender](https://github.com/30350n/pcb2blender)).
+I created it as I wanted a fast to use, simple and less buggy/bloated alternative to the [kicadStepUp](https://github.com/easyw/kicadStepUpMod) workbench that just works and better integrates into my KiCad to Blender workflow ([pcb2blender](https://github.com/30350n/pcb2blender)).
 
 ## Usage
 
@@ -27,10 +22,9 @@ integrates into my KiCad to Blender workflow
 
 ### Materials
 
-Missing anything from the selection of available materials? Feel free to create an issue
-on the [mat4cad](https://github.com/30350n/mat4cad) repository, explaining what materials
-you'd like to see (possibly also how they'd look like in Blender) and I might add them in the
-next update!
+Missing anything from the selection of available materials?
+
+Feel free to create an issue on the [mat4cad](https://github.com/30350n/mat4cad) repository, explaining what materials you'd like to see (possibly also how they'd look like in Blender) and I might add them in the next update!
 
 ## Installation
 
@@ -44,24 +38,14 @@ next update!
 
 ## Other Projects
 
-- All the 3D models of the
-  [protorack-kicad](https://github.com/30350n/protorack-kicad) KiCad library, which contains
-  all the custom symbols and footprints I use for eurorack module development, have been
-  created using this workbench.
+- All the 3D models of the [protorack-kicad](https://github.com/30350n/protorack-kicad) KiCad library, which contains all the custom symbols and footprints I use for eurorack module development, have been created using this workbench.
 
-- The [pcb2blender](https://github.com/30350n/pcb2blender) workflow makes use of the
-  [mat4cad](https://github.com/30350n/mat4cad) materials that this workbench lets you apply
-  to your models. These materials will be recognized by Blender, and depending on the material
-  type, different procedural textures/features will be used in Blender, making your models
-  look more realistic.
+- The [pcb2blender](https://github.com/30350n/pcb2blender) workflow makes use of the [mat4cad](https://github.com/30350n/mat4cad) materials that this workbench lets you apply to your models. These materials will be recognized by Blender, and depending on the material type, different procedural textures/features will be used in Blender, making your models look more realistic.
 
 ## Credits
 
-- The name of this project is inspired by the awesome
-  [svg2shenzhen](https://github.com/badgeek/svg2shenzhen) Inkscape extension by
-  [badgeek](https://github.com/badgeek).
+- The name of this project is inspired by the awesome [svg2shenzhen](https://github.com/badgeek/svg2shenzhen) Inkscape extension by [badgeek](https://github.com/badgeek).
 
 ## License
 
-- This project is licensed under
-  [GPLv3](https://github.com/30350n/free2ki/blob/master/LICENSE).
+- This project is licensed under [GPLv3](https://github.com/30350n/free2ki/blob/master/LICENSE).
