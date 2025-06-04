@@ -9,7 +9,7 @@
   <license file="LICENSE">GPL-3.0-or-later</license>
   <url type="repository" branch="freecad-addons">https://github.com/30350n/free2ki</url>
   <url type="readme">https://github.com/30350n/free2ki/blob/freecad-addons/README.md</url>
-  <icon>free2ki/icons/kicad-export.svg</icon>
+  <icon>freecad/free2ki/icons/kicad-export.svg</icon>
   <content>
     <workbench>
       <name>free2ki</name>
