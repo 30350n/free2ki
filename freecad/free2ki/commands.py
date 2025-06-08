@@ -167,6 +167,10 @@ def get_shape(obj: GeoFeature):
     return cast(Shape, obj.getPropertyByName("Shape"))
 
 
+def is_partdesign_feature(obj: DocumentObject):
+    return obj.__class__.__module__ == "PartDesign" and obj.__class__.__name__ == "Feature"
+
+
 def get_shape_objects(objects: list[DocumentObject] | None = None) -> list[GeoFeature]:
     if objects is None:
         objects = FreeCAD.Gui.Selection.getSelection()
@@ -174,7 +178,9 @@ def get_shape_objects(objects: list[DocumentObject] | None = None) -> list[GeoFe
     shape_objects: list[GeoFeature] = []
     for obj in objects:
         if obj.Visibility:
-            if obj.hasExtension("App::GroupExtension"):
+            if is_partdesign_feature(obj) and isinstance(obj, GeoFeature):
+                shape_objects.append(obj)
+            elif obj.hasExtension("App::GroupExtension"):
                 shape_objects += get_shape_objects(cast(GroupExtension, obj).Group)
             elif isinstance(obj, GeoFeature) and has_shape(obj) and get_shape(obj).Faces:
                 shape_objects.append(obj)
