@@ -43,7 +43,7 @@
   <defs
      id="defs5435">
     <style
-       id="style5390">.cls-1{fill:none;}.cls-2{isolation:isolate;}.cls-15,.cls-3{mix-blend-mode:overlay;}.cls-4{clip-path:url(#clip-path);}.cls-16,.cls-5{opacity:0.75;}.cls-5,.cls-7{mix-blend-mode:multiply;}.cls-6{clip-path:url(#clip-path-2);}.cls-7{opacity:0.6;}.cls-8{fill:url(#Безымянный_градиент_10);}.cls-9{mix-blend-mode:saturation;fill:url(#Безымянный_градиент_28);}.cls-10{clip-path:url(#clip-path-3);}.cls-11,.cls-16{fill:#fff;}.cls-12{fill:url(#Безымянный_градиент_114);}.cls-13{fill:url(#Безымянный_градиент_104);}.cls-14{fill:#ff6d00;}.cls-15{opacity:0.5;}</style>
+       id="style5390">.cls-1{fill:none;}.cls-2{isolation:isolate;}.cls-15,.cls-3{mix-blend-mode:overlay;}.cls-4{clip-path:url(#clip-path);}.cls-16,.cls-5{opacity:0.75;}.cls-5,.cls-7{mix-blend-mode:multiply;}.cls-6{clip-path:url(#clip-path-2);}.cls-7{opacity:0.6;}.cls-8{fill:url(#gradient_10);}.cls-9{mix-blend-mode:saturation;fill:url(#gradient_28);}.cls-10{clip-path:url(#clip-path-3);}.cls-11,.cls-16{fill:#fff;}.cls-12{fill:url(#gradient_114);}.cls-13{fill:url(#gradient_104);}.cls-14{fill:#ff6d00;}.cls-15{opacity:0.5;}</style>
     <clipPath
        id="clip-path">
       <rect
@@ -67,7 +67,7 @@
          y="0" />
     </clipPath>
     <linearGradient
-       id="Безымянный_градиент_10"
+       id="gradient_10"
        x1="50.0093"
        x2="50.0093"
        y2="100"
@@ -83,7 +83,7 @@
          id="stop5400" />
     </linearGradient>
     <radialGradient
-       id="Безымянный_градиент_28"
+       id="gradient_28"
        cx="50.0093"
        cy="23.271601"
        r="28.023199"
@@ -110,7 +110,7 @@
          y="0" />
     </clipPath>
     <radialGradient
-       id="Безымянный_градиент_114"
+       id="gradient_114"
        cx="47.3605"
        cy="53.197102"
        r="38.302299"
@@ -147,7 +147,7 @@
          id="stop5421" />
     </radialGradient>
     <linearGradient
-       id="Безымянный_градиент_104"
+       id="gradient_104"
        x1="76.367302"
        y1="17.9571"
        x2="76.367302"
@@ -175,7 +175,7 @@
          id="stop5432" />
     </linearGradient>
     <radialGradient
-       xlink:href="#Безымянный_градиент_114"
+       xlink:href="#gradient_114"
        id="radialGradient6102"
        gradientUnits="userSpaceOnUse"
        cx="47.3605"
@@ -183,7 +183,7 @@
        r="38.302299"
        gradientTransform="matrix(1.0044845,0,0,1.0075283,-17.708947,-14.870139)" />
     <radialGradient
-       xlink:href="#Безымянный_градиент_114"
+       xlink:href="#gradient_114"
        id="radialGradient6104"
        gradientUnits="userSpaceOnUse"
        cx="47.3605"
@@ -255,7 +255,7 @@
        rx="22.321856"
        id="rect5459"
        y="2.6506116"
-       style="fill:url(#Безымянный_градиент_10);stroke-width:2.19044"
+       style="fill:url(#gradient_10);stroke-width:2.19044"
        ry="22.35565" />
     <rect
        class="cls-9"
@@ -265,7 +265,7 @@
        rx="22.321856"
        id="rect5461"
        y="2.6506116"
-       style="fill:url(#Безымянный_градиент_28);stroke-width:2.19044"
+       style="fill:url(#gradient_28);stroke-width:2.19044"
        ry="22.35565" />
     <g
        class="cls-3"
