@@ -4,7 +4,7 @@
   <description>Export your 3D models to VRML files, with correctly applied rotation and scaling, for use in KiCad as well as Blender.</description>
   <version>1.1.2</version>
   <freecadmin>1.0.0</freecadmin>
-  <date>2025-06-03</date>
+  <date>2025-12-27</date>
   <maintainer email="mail@30350n.de">30350n</maintainer>
   <license file="LICENSE">GPL-3.0-or-later</license>
   <url type="repository" branch="freecad-addons">https://github.com/30350n/free2ki</url>
