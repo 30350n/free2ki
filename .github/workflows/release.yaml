@@ -24,3 +24,4 @@ jobs:
           sha256sum $NAME | cut -c -64 | tr -d "\n" > $NAME.sha256
           gh release upload $GITHUB_REF_NAME $NAME
           gh release upload $GITHUB_REF_NAME $NAME.sha256
+          gh release upload $GITHUB_REF_NAME free2ki.zip
